@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Teleport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Session;
 
 class TeleportController extends Controller
 {
@@ -17,6 +19,45 @@ class TeleportController extends Controller
         //
         return view('teleport');
     }
+
+    public function result(Request $request)
+    {
+        $query = $request->input('query');
+        if ($query) {
+            $url = "https://api.teleport.org/api/cities/?search=" . $query;
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_TIMEOUT => 30000,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => array(
+                    // Set Here Your Requesred Headers
+                    'Content-Type: application/json',
+                ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            if ($err) {
+                echo "cURL Error #:" . $err;
+                return view('result');
+            } else {
+                // print_r(json_decode($response));
+                dd(json_decode($response, true));
+                // return view('result')->withResult(json_decode($response, true));
+            }
+        } else {
+            Session::flash('error', 'Podaj nazwe miasta!');
+            return Redirect::to('teleport')->withErrors('Podaj nazwe miasta!')->withInput();
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.

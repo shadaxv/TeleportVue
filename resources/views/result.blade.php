@@ -9,7 +9,7 @@
         <title>Interns</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,400,600" rel="stylesheet" type="text/css">
 
         <!-- Styles -->
         <style>
@@ -48,6 +48,13 @@
 
             .title {
                 font-size: 4rem;
+                display: inline-block;
+            }
+
+            .subtitle {
+                display: inline-block;
+                font-size: 1.75rem;
+                font-weight: 300;
             }
 
             .links > a {
@@ -74,36 +81,39 @@
                 transition: all 0.3s;
                 transition: border 1s;
             }
+
+            h2 {
+                font-weight: 300;
+                display: inline-block;
+                line-height: 4rem;
+            }
         </style>
     </head>
     <body>
         <div class="flex-center position-ref full-height">
 
             <div class="content">
-                <div class="title m-b-md">
-                    Teleport Search App
-                </div>
 
-                <section class="" style="margin: 30px auto">
-                    <form method="POST" action="/result">
-                        {{ csrf_field() }}
-                        <label for="query" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label>
-                        <br>
-                        <input type="text" name="query" placeholder="Wroclaw">
-                        <button type="submit">Wyszukaj!</button>
-                        @if(Session::has('error'))
-                            <span style="color: #FF1744; font-weight: 600; margin-top: 6px; display: block"> {{ Session::get('error') }} </span>
-                        @endif
-                    </form>
+                <div class="subtitle m-b-md">
+                    Wyniki wyszukiwania dla:
+                </div>
+                <div class="title m-b-md">
+                    &quot;{{ Request::get('query') }}&quot;
                     
-                    
-                    
-                </section>
+                </div>
 
                 <div class="links">
                     <a href="https://github.com/shadaxv/teleport">GitHub</a>
                 </div>
             </div>
         </div>
+
+
+        
+        <script>
+            const string = '{{$result}}';
+            let results = (string);
+            console.log(results);
+        </script>
     </body>
 </html>

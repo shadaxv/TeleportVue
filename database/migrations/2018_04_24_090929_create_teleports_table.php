@@ -15,6 +15,9 @@ class CreateTeleportsTable extends Migration
     {
         Schema::create('teleports', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('city_search', 25);
+            $table->enum('status', ['pending', 'failed', 'success']);
+            $table->binary('query_result')->nullable();
             $table->timestamps();
         });
     }

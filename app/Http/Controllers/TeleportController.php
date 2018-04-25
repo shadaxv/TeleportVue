@@ -35,7 +35,7 @@ class TeleportController extends Controller
                 CURLOPT_URL => $url,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
-                CURLOPT_TIMEOUT => 30000,
+                CURLOPT_TIMEOUT => 5,
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => "GET",
                 CURLOPT_HTTPHEADER => array(
@@ -49,7 +49,8 @@ class TeleportController extends Controller
 
             if ($err) {
                 echo "cURL Error #:" . $err;
-                return view('result');
+                Session::flash('error', 'API nie odpowiada! Sprobuj ponownie za moment.');
+                return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
             } else {
                 $result = json_decode($response, true);  
                 $date = date('Y-m-d H:i:s');
@@ -78,7 +79,7 @@ class TeleportController extends Controller
                             CURLOPT_URL => $url,
                             CURLOPT_RETURNTRANSFER => true,
                             CURLOPT_ENCODING => "",
-                            CURLOPT_TIMEOUT => 30000,
+                            CURLOPT_TIMEOUT => 5,
                             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                             CURLOPT_CUSTOMREQUEST => "GET",
                             CURLOPT_HTTPHEADER => array(
@@ -92,7 +93,8 @@ class TeleportController extends Controller
 
                         if ($err) {
                             echo "cURL Error #:" . $err;
-                            return view('result');
+                            Session::flash('error', 'API nie odpowiada! Sprobuj ponownie za moment.');
+                            return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
                         } else {
                             $date = date('Y-m-d H:i:s');
                             $result2 = json_decode($response2, true);

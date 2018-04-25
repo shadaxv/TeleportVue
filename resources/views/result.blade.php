@@ -56,7 +56,7 @@
 
             .links > a {
                 color: #636b6f;
-                padding: 10px 18px 3px;
+                padding: 5px 18px 3px;
                 font-size: 14px;
                 font-weight: 600;
                 letter-spacing: .1rem;
@@ -77,6 +77,9 @@
                 border-bottom: 2px solid #1976D2;
                 transition: all 0.3s;
                 transition: border 1s;
+            }
+            a:focus {
+                border-bottom: 2px solid transparent;
             }
             thead > tr > th {
                 font-weight: 500 !IMPORTANT;

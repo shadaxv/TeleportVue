@@ -77,6 +77,9 @@
                 transition: all 0.3s;
                 transition: border 1s;
             }
+            a:focus {
+                border-bottom: 2px solid transparent;
+            }
             thead > tr > th {
                 font-weight: 500 !IMPORTANT;
                 font-size: 16px;

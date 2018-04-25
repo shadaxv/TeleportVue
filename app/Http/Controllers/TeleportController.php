@@ -102,6 +102,7 @@ class TeleportController extends Controller
                         }
                     }
                     DB::update('update teleports set query_result = ?, updated_at = ?, status = "success" where id = ?',[$response, $date, $id]);
+                    // dd($georesult);
                     return view('result')->withGeoresult($georesult);
                 }
             }

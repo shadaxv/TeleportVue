@@ -7,24 +7,27 @@
 
         <title>Laravel</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700&amp;subset=latin-ext" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet" type="text/css" >
+        <link href="{{ asset('css/mdb.css') }}" rel="stylesheet" type="text/css" >
 
         <!-- Styles -->
         <style>
             html, body {
                 background-color: #fff;
                 color: #636b6f;
-                font-family: 'Raleway', sans-serif;
+                font-family: 'Quicksand', sans-serif;
                 font-weight: 100;
-                height: 100vh;
+                min-height: 100vh;
                 margin: 0;
             }
-
-            .full-height {
-                height: 100vh;
+            .subtitle {
+                font-weight: 400;
+                font-size: 20px;
             }
-
+            .full-height {
+                min-height: 100vh;
+            }
             .flex-center {
                 align-items: center;
                 display: flex;
@@ -46,13 +49,13 @@
             }
 
             .title {
-                font-size: 84px;
+                font-size: 4rem;
             }
 
             .links > a {
                 color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
+                padding: 10px 18px 3px;
+                font-size: 14px;
                 font-weight: 600;
                 letter-spacing: .1rem;
                 text-decoration: none;
@@ -60,8 +63,46 @@
             }
 
             .m-b-md {
-                margin-bottom: 30px;
+                margin-bottom: 10px;
             }
+
+            a {
+                border-bottom: 2px solid transparent;
+            }
+
+            a:hover, a:focus {
+                color: #1976D2;
+                border-bottom: 2px solid #1976D2;
+                transition: all 0.3s;
+                transition: border 1s;
+            }
+            thead > tr > th {
+                font-weight: 500 !IMPORTANT;
+                font-size: 16px;
+            }
+
+            tbody > tr > td {
+                font-weight: 400 !IMPORTANT;
+                font-size: 16px;
+            }
+
+            .tr-title {
+                font-weight: 600 !IMPORTANT;
+                font-size: 16px !IMPORTANT;
+            }
+            .table::-webkit-scrollbar-track {
+                -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+                background-color: #F5F5F5;
+                border-radius: 10px; }
+                
+            .table::-webkit-scrollbar {
+                width: 12px;
+                background-color: #F5F5F5; }
+            
+            .table::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+                background-color: #E0E0E0; }
         </style>
     </head>
     <body>
@@ -79,15 +120,12 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Teleport Search App
                 </div>
 
                 <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                    <a href="/teleport">Rozpocznij wyszukiwania</a>
+                    <a href="https://github.com/shadaxv/teleport" target="_blank">GitHub</a>
                 </div>
             </div>
         </div>

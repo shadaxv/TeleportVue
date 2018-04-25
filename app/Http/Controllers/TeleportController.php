@@ -6,6 +6,7 @@ use App\Teleport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Session;
+use DB;
 
 class TeleportController extends Controller
 {
@@ -24,6 +25,8 @@ class TeleportController extends Controller
     {
         $query = $request->input('query');
         if ($query) {
+            Teleport::create(['status' => 'pending', 'city_search' => $query]);
+            $id = DB::getPdo()->lastInsertId();
             $url = "https://api.teleport.org/api/cities/?search=" . $query;
 
             $curl = curl_init();
@@ -48,9 +51,59 @@ class TeleportController extends Controller
                 echo "cURL Error #:" . $err;
                 return view('result');
             } else {
-                // print_r(json_decode($response));
-                dd(json_decode($response, true));
-                // return view('result')->withResult(json_decode($response, true));
+                $result = json_decode($response, true);  
+                $date = date('Y-m-d H:i:s');
+                if(empty($result["_embedded"]["city:search-results"]))
+                {
+                    DB::update('update teleports set query_result = ?, updated_at = ?, status = "failed" where id = ?',[$response, $date, $id]);
+                    Session::flash('error', 'Brak wynikow!');
+                    return Redirect::to('teleport')->withErrors('Brak wynikow!')->withInput();
+                } else {
+                    $geohash = array();
+                    $georesult = array();
+                    foreach($result["_embedded"]["city:search-results"] as $key) {
+                        array_push($geohash, $key["_links"]["city:item"]["href"]);
+                    }
+                    foreach($geohash as $url) {
+                        $geoId = substr($url, strpos($url, ":") + 1);
+                        if (($pos = strpos($url, ":")) !== FALSE) { 
+                            $geoId = substr($geoId, strpos($geoId, ":") + 1);
+                            $geoId = substr($geoId, 0, -1);
+                        }
+                        Teleport::create(['status' => 'pending', 'city_search' => $geoId]);
+                        $id2 = DB::getPdo()->lastInsertId();
+
+                        $curl = curl_init();
+                        curl_setopt_array($curl, array(
+                            CURLOPT_URL => $url,
+                            CURLOPT_RETURNTRANSFER => true,
+                            CURLOPT_ENCODING => "",
+                            CURLOPT_TIMEOUT => 30000,
+                            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                            CURLOPT_CUSTOMREQUEST => "GET",
+                            CURLOPT_HTTPHEADER => array(
+                                // Set Here Your Requesred Headers
+                                'Content-Type: application/json',
+                            ),
+                        ));
+                        $response2 = curl_exec($curl);
+                        $err = curl_error($curl);
+                        curl_close($curl);
+
+                        if ($err) {
+                            echo "cURL Error #:" . $err;
+                            return view('result');
+                        } else {
+                            $date = date('Y-m-d H:i:s');
+                            $result2 = json_decode($response2, true);
+                            $geonameId = $result2["geoname_id"];
+                            DB::update('update teleports set city_search = ?, query_result = ?, updated_at = ?, status = "success" where id = ?',[$geonameId, $response2, $date, $id2]);
+                            array_push($georesult, $result2);
+                        }
+                    }
+                    DB::update('update teleports set query_result = ?, updated_at = ?, status = "success" where id = ?',[$response, $date, $id]);
+                    return view('result')->withGeoresult($georesult);
+                }
             }
         } else {
             Session::flash('error', 'Podaj nazwe miasta!');
@@ -66,7 +119,7 @@ class TeleportController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**

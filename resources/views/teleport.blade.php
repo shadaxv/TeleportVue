@@ -8,24 +8,27 @@
 
         <title>Interns</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700&amp;subset=latin-ext" rel="stylesheet">
+        <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet" type="text/css" >
+        <link href="{{ asset('css/mdb.css') }}" rel="stylesheet" type="text/css" >
 
         <!-- Styles -->
         <style>
             html, body {
                 background-color: #fff;
                 color: #636b6f;
-                font-family: 'Raleway', sans-serif;
+                font-family: 'Quicksand', sans-serif;
                 font-weight: 100;
-                height: 100vh;
+                min-height: 100vh;
                 margin: 0;
             }
-
-            .full-height {
-                height: 100vh;
+            .subtitle {
+                font-weight: 400;
+                font-size: 20px;
             }
-
+            .full-height {
+                min-height: 100vh;
+            }
             .flex-center {
                 align-items: center;
                 display: flex;
@@ -61,7 +64,7 @@
             }
 
             .m-b-md {
-                margin-bottom: 30px;
+                margin-bottom: 10px;
             }
 
             a {
@@ -73,6 +76,39 @@
                 border-bottom: 2px solid #1976D2;
                 transition: all 0.3s;
                 transition: border 1s;
+            }
+            thead > tr > th {
+                font-weight: 500 !IMPORTANT;
+                font-size: 16px;
+            }
+
+            tbody > tr > td {
+                font-weight: 400 !IMPORTANT;
+                font-size: 16px;
+            }
+
+            .tr-title {
+                font-weight: 600 !IMPORTANT;
+                font-size: 16px !IMPORTANT;
+            }
+            .table::-webkit-scrollbar-track {
+                -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+                background-color: #F5F5F5;
+                border-radius: 10px; }
+                
+            .table::-webkit-scrollbar {
+                width: 12px;
+                background-color: #F5F5F5; }
+            
+            .table::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+                background-color: #E0E0E0; }
+            input {
+                padding: 1px 6px;
+            }
+            button:hover {
+                cursor: pointer;
             }
         </style>
     </head>
@@ -101,7 +137,7 @@
                 </section>
 
                 <div class="links">
-                    <a href="https://github.com/shadaxv/teleport">GitHub</a>
+                    <a href="https://github.com/shadaxv/teleport" target="_blank">GitHub</a>
                 </div>
             </div>
         </div>

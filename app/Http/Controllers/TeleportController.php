@@ -53,7 +53,7 @@ class TeleportController extends Controller
                     $date = date('Y-m-d H:i:s');
                     DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id]);
                     Session::flash('error', 'API nie odpowiada! Spróbuj ponownie za moment.');
-                    return Redirect::to('teleport')->withErrors('API nie odpowiada! Spróbuj ponownie za moment.')->withInput();
+                    return Redirect::to('teleport')->withErrors('API nie odpowiada! Spróbuj ponownie za moment.');
                 } else {
                     $result = json_decode($response, true);  
                     $date = date('Y-m-d H:i:s');
@@ -61,7 +61,7 @@ class TeleportController extends Controller
                     {
                         DB::update('update teleports set query_result = ?, updated_at = ?, status = "failed" where id = ?',[$response, $date, $id]);
                         Session::flash('error', 'Brak wyników!');
-                        return Redirect::to('teleport')->withErrors('Brak wyników!')->withInput();
+                        return Redirect::to('teleport')->withErrors('Brak wyników!');
                     } else {
                         $geohash = array();
                         $georesult = array();
@@ -112,7 +112,7 @@ class TeleportController extends Controller
                                 $date = date('Y-m-d H:i:s');
                                 DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id]);
                                 Session::flash('error', 'API nie odpowiada! Spróbuj ponownie za moment.');
-                                return Redirect::to('teleport')->withErrors('API nie odpowiada! Spróbuj ponownie za moment.')->withInput();
+                                return Redirect::to('teleport')->withErrors('API nie odpowiada! Spróbuj ponownie za moment.');
                             }
                         }
                         
@@ -126,12 +126,12 @@ class TeleportController extends Controller
                     return Redirect::to('teleport')->withErrors('Wprowadzona nazwa jest za długa! Maksymalna dlługość to 25 znaków.');
                 } else {
                     Session::flash('error', 'Baza danych nie odpowiada! Spróbuj ponownie za moment.<br>Kod błędu: ' .(int)$e->getCode());
-                    return Redirect::to('teleport')->withErrors('Baza danych nie odpowiada! Spróbuj ponownie za moment. Kod błędu: ' .(int)$e->getCode())->withInput();
+                    return Redirect::to('teleport')->withErrors('Baza danych nie odpowiada! Spróbuj ponownie za moment. Kod błędu: ' .(int)$e->getCode());
                 }
             }
         } else {
             Session::flash('error', 'Podaj nazwe miasta!');
-            return Redirect::to('teleport')->withErrors('Podaj nazwe miasta!')->withInput();
+            return Redirect::to('teleport')->withErrors('Podaj nazwe miasta!');
         }
     }
 

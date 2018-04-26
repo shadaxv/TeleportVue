@@ -6,13 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Teleport App - Results</title>
+        <title>Teleport App - {{ Request::get('query') }} Results</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700&amp;subset=latin-ext" rel="stylesheet">
         <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet" type="text/css" >
         <link href="{{ asset('css/mdb.css') }}" rel="stylesheet" type="text/css" >
-        
+
         <link rel="apple-touch-icon" sizes="180x180" href="{{{ asset('favicon/apple-touch-icon.png') }}}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{{ asset('favicon/favicon-32x32.png') }}}">
         <link rel="icon" type="image/png" sizes="16x16" href="{{{ asset('favicon/favicon-16x16.png') }}}">
@@ -139,6 +139,9 @@
             }
             .links {
                 margin-bottom: 40px;
+            }
+            input {
+                padding: 1px 3px;
             }
         </style>
     </head>

@@ -139,6 +139,10 @@
             .links {
                 margin-bottom: 40px;
             }
+
+            input {
+                padding: 1px 3px;
+            }
         </style>
     </head>
     <body>

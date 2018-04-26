@@ -52,16 +52,16 @@ class TeleportController extends Controller
                     echo "cURL Error #:" . $err;
                     $date = date('Y-m-d H:i:s');
                     DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id]);
-                    Session::flash('error', 'API nie odpowiada! Sprobuj ponownie za moment.');
-                    return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
+                    Session::flash('error', 'API nie odpowiada! Spróbuj ponownie za moment.');
+                    return Redirect::to('teleport')->withErrors('API nie odpowiada! Spróbuj ponownie za moment.')->withInput();
                 } else {
                     $result = json_decode($response, true);  
                     $date = date('Y-m-d H:i:s');
                     if(empty($result["_embedded"]["city:search-results"]))
                     {
                         DB::update('update teleports set query_result = ?, updated_at = ?, status = "failed" where id = ?',[$response, $date, $id]);
-                        Session::flash('error', 'Brak wynikow!');
-                        return Redirect::to('teleport')->withErrors('Brak wynikow!')->withInput();
+                        Session::flash('error', 'Brak wyników!');
+                        return Redirect::to('teleport')->withErrors('Brak wyników!')->withInput();
                     } else {
                         $geohash = array();
                         $georesult = array();
@@ -111,8 +111,8 @@ class TeleportController extends Controller
                             if($i == $count) {
                                 $date = date('Y-m-d H:i:s');
                                 DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id]);
-                                Session::flash('error', 'API nie odpowiada! Sprobuj ponownie za moment.');
-                                return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
+                                Session::flash('error', 'API nie odpowiada! Spróbuj ponownie za moment.');
+                                return Redirect::to('teleport')->withErrors('API nie odpowiada! Spróbuj ponownie za moment.')->withInput();
                             }
                         }
                         
@@ -121,8 +121,13 @@ class TeleportController extends Controller
                     }
                 }
             } catch (\PDOException $e) {
-                Session::flash('error', 'Baza danych nie odpowiada! Sprobuj ponownie za moment.<br>Kod błędu: ' .(int)$e->getCode());
-                return Redirect::to('teleport')->withErrors('Baza danych nie odpowiada! Sprobuj ponownie za moment. Kod błędu: ' .(int)$e->getCode())->withInput();
+                if ((int)$e->getCode() == 22001) {
+                    Session::flash('error', 'Wprowadzona nazwa jest za długa! Maksymalna długość to 25 znaków.');
+                    return Redirect::to('teleport')->withErrors('Wprowadzona nazwa jest za długa! Maksymalna dlługość to 25 znaków.');
+                } else {
+                    Session::flash('error', 'Baza danych nie odpowiada! Spróbuj ponownie za moment.<br>Kod błędu: ' .(int)$e->getCode());
+                    return Redirect::to('teleport')->withErrors('Baza danych nie odpowiada! Spróbuj ponownie za moment. Kod błędu: ' .(int)$e->getCode())->withInput();
+                }
             }
         } else {
             Session::flash('error', 'Podaj nazwe miasta!');

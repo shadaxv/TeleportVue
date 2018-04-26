@@ -112,6 +112,7 @@
                 background-color: #E0E0E0; }
             .table {
                 overflow-x: auto;
+                width: fit-content;
                 max-width: 100%;
                 margin: 0 auto 40px;
                 position: relative;

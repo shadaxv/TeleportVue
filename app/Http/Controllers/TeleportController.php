@@ -49,6 +49,8 @@ class TeleportController extends Controller
 
             if ($err) {
                 echo "cURL Error #:" . $err;
+                $date = date('Y-m-d H:i:s');
+                DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id]);
                 Session::flash('error', 'API nie odpowiada! Sprobuj ponownie za moment.');
                 return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
             } else {
@@ -65,6 +67,8 @@ class TeleportController extends Controller
                     foreach($result["_embedded"]["city:search-results"] as $key) {
                         array_push($geohash, $key["_links"]["city:item"]["href"]);
                     }
+                    $count = count($geohash);
+                    $i = 0;
                     foreach($geohash as $url) {
                         $geoId = substr($url, strpos($url, ":") + 1);
                         if (($pos = strpos($url, ":")) !== FALSE) { 
@@ -93,8 +97,8 @@ class TeleportController extends Controller
 
                         if ($err) {
                             echo "cURL Error #:" . $err;
-                            Session::flash('error', 'API nie odpowiada! Sprobuj ponownie za moment.');
-                            return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
+                            $date = date('Y-m-d H:i:s');
+                            DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id2]);
                         } else {
                             $date = date('Y-m-d H:i:s');
                             $result2 = json_decode($response2, true);
@@ -102,9 +106,15 @@ class TeleportController extends Controller
                             DB::update('update teleports set city_search = ?, query_result = ?, updated_at = ?, status = "success" where id = ?',[$geonameId, $response2, $date, $id2]);
                             array_push($georesult, $result2);
                         }
+                        $i++;
+                        if($i == $count) {
+                            $date = date('Y-m-d H:i:s');
+                            DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[ $date, $id]);
+                            Session::flash('error', 'API nie odpowiada! Sprobuj ponownie za moment.');
+                            return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
+                        }
                     }
                     DB::update('update teleports set query_result = ?, updated_at = ?, status = "success" where id = ?',[$response, $date, $id]);
-                    // dd($georesult);
                     return view('result')->withGeoresult($georesult);
                 }
             }

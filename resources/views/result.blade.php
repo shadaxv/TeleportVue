@@ -112,7 +112,7 @@
                 background-color: #E0E0E0; }
             .table {
                 overflow-x: auto;
-                max-width: 95%;
+                max-width: 100%;
                 margin: 0 auto 40px;
                 position: relative;
                 display: block;
@@ -120,7 +120,7 @@
                 padding-right: 6px
             }
             .content {
-                max-width: 100%;
+                max-width: 95%;
             }
             .links {
                 margin-bottom: 40px;

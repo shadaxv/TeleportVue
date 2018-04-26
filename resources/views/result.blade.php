@@ -26,6 +26,7 @@
             .subtitle {
                 font-weight: 400;
                 font-size: 20px;
+                margin-top: 60px;
             }
             .full-height {
                 min-height: 100vh;
@@ -102,12 +103,28 @@
                 
             .table::-webkit-scrollbar {
                 width: 12px;
+                height: 12px;
                 background-color: #F5F5F5; }
             
             .table::-webkit-scrollbar-thumb {
                 border-radius: 10px;
                 -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
                 background-color: #E0E0E0; }
+            .table {
+                overflow-x: auto;
+                max-width: 95%;
+                margin: 0 auto 40px;
+                position: relative;
+                display: block;
+                max-height: 500px;
+                padding-right: 6px
+            }
+            .content {
+                max-width: 100%;
+            }
+            .links {
+                margin-bottom: 40px;
+            }
         </style>
     </head>
     <body>
@@ -122,7 +139,7 @@
                     &quot;{{ Request::get('query') }}&quot;
                 </div>
 
-                <table id="table" class="table" style='position: relative; display: block; max-height: 500px; overflow-x: auto; margin-bottom: 40px; padding-right: 6px'>
+                <table id="table" class="table" style=''>
                     <thead style="border: 0;">
                         <tr>
                             <th style="position: sticky; top: 0px; background: #F5F5F5">ID</th>

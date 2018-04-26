@@ -122,7 +122,7 @@
                     &quot;{{ Request::get('query') }}&quot;
                 </div>
 
-                <table id="table" class="table" style='position: relative; display: block; max-height: 500px; overflow-x: auto; margin-bottom: 30px; padding-right: 6px'>
+                <table id="table" class="table" style='position: relative; display: block; max-height: 500px; overflow-x: auto; margin-bottom: 40px; padding-right: 6px'>
                     <thead style="border: 0;">
                         <tr>
                             <th style="position: sticky; top: 0px; background: #F5F5F5">ID</th>
@@ -150,6 +150,7 @@
                             echo number_format((float)$key["location"]["latlon"]["longitude"], 4, '.', '');
                             echo "</td></tr>";
                         } ?>
+                        
                     </tbody>
                 </table>
 

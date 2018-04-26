@@ -48,7 +48,7 @@ class TeleportController extends Controller
                 $err = curl_error($curl);
                 curl_close($curl);
 
-                if ($err) {
+                if ($err || $response == false) {
                     echo "cURL Error #:" . $err;
                     $date = date('Y-m-d H:i:s');
                     DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id]);
@@ -84,7 +84,7 @@ class TeleportController extends Controller
                                 CURLOPT_URL => $url,
                                 CURLOPT_RETURNTRANSFER => true,
                                 CURLOPT_ENCODING => "",
-                                CURLOPT_TIMEOUT => 5,
+                                CURLOPT_TIMEOUT_MS => 5,
                                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                                 CURLOPT_CUSTOMREQUEST => "GET",
                                 CURLOPT_HTTPHEADER => array(
@@ -96,8 +96,7 @@ class TeleportController extends Controller
                             $err = curl_error($curl);
                             curl_close($curl);
 
-                            if ($err) {
-                                echo "cURL Error #:" . $err;
+                            if ($err || $response2 == false) {
                                 $date = date('Y-m-d H:i:s');
                                 DB::update('update teleports set updated_at = ?, status = "failed" where id = ?',[$date, $id2]);
                                 $i++;
@@ -120,8 +119,8 @@ class TeleportController extends Controller
                     }
                 }
             } catch (\PDOException $e) {
-                Session::flash('error', 'Baza danych nie odpowiada! Sprobuj ponownie za moment.');
-                return Redirect::to('teleport')->withErrors('Baza danych nie odpowiada! Sprobuj ponownie za moment.')->withInput();
+                Session::flash('error', 'Baza danych nie odpowiada! Sprobuj ponownie za moment.<br>Kod błędu: ' .(int)$e->getCode());
+                return Redirect::to('teleport')->withErrors('Baza danych nie odpowiada! Sprobuj ponownie za moment. Kod błędu: ' .(int)$e->getCode())->withInput();
             }
         } else {
             Session::flash('error', 'Podaj nazwe miasta!');

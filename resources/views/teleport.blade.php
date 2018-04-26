@@ -128,10 +128,10 @@
                         {{ csrf_field() }}
                         <label for="query" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label>
                         <br>
-                        <input type="text" name="query" placeholder="Wroclaw">
+                        <input type="text" name="query" placeholder="Wroclaw" required>
                         <button type="submit">Wyszukaj!</button>
                         @if(Session::has('error'))
-                            <span style="color: #FF1744; font-weight: 600; margin-top: 6px; display: block"> {{ Session::get('error') }} </span>
+                            <span style="color: #FF1744; font-weight: 600; margin-top: 6px; display: block"> {!! Session::get('error') !!} </span>
                         @endif
                     </form>
                     

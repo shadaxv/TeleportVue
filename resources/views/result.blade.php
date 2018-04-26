@@ -160,7 +160,11 @@
                             echo '</td><td data-title="Państwo">';
                             echo $key["_links"]["city:country"]["name"];
                             echo '</td><td data-title="Populacja">';
-                            echo $key["population"];
+                            if (array_key_exists('population', $key)) {
+                                echo $key["population"];
+                            } else {
+                                echo "Nie podano";
+                            }
                             echo '</td><td data-title="Szerokość geo.">';
                             echo number_format((float)$key["location"]["latlon"]["latitude"], 4, '.', '');
                             echo '</td><td data-title="Długość geo.">';

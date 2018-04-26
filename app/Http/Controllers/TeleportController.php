@@ -28,9 +28,9 @@ class TeleportController extends Controller
             try {
                 Teleport::create(['status' => 'pending', 'city_search' => $query]);
                 $id = DB::getPdo()->lastInsertId();
-                $url = "https://api.teleport.org/api/cities/?search=" . $query;
-
+                $url = "https://api.teleport.org/api/cities/?search=" . $query; 
                 $curl = curl_init();
+                
 
                 curl_setopt_array($curl, array(
                     CURLOPT_URL => $url,
@@ -92,6 +92,7 @@ class TeleportController extends Controller
                                     'Content-Type: application/json',
                                 ),
                             ));
+                            
                             $response2 = curl_exec($curl);
                             $err = curl_error($curl);
                             curl_close($curl);
@@ -114,6 +115,7 @@ class TeleportController extends Controller
                                 return Redirect::to('teleport')->withErrors('API nie odpowiada! Sprobuj ponownie za moment.')->withInput();
                             }
                         }
+                        
                         DB::update('update teleports set query_result = ?, updated_at = ?, status = "success" where id = ?',[$response, $date, $id]);
                         return view('result')->withGeoresult($georesult);
                     }

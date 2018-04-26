@@ -80,6 +80,9 @@
             a:focus {
                 border-bottom: 2px solid transparent;
             }
+            a:focus:hover {
+                border-bottom: 2px solid #1976D2;
+            }
             thead > tr > th {
                 font-weight: 500 !IMPORTANT;
                 font-size: 16px;

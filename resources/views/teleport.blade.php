@@ -78,6 +78,9 @@
                 transition: all 0.3s;
                 transition: border 1s;
             }
+            a:focus:hover {
+                border-bottom: 2px solid #1976D2;
+            }
             a:focus {
                 border-bottom: 2px solid transparent;
             }

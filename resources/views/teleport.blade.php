@@ -202,7 +202,7 @@
                 </div>
 
                 <section class="" style="margin: 30px auto">
-                    <form method="POST" action="/result" autocomplete="off">
+                    <form method="POST" action="/result" autocomplete="off" id="search-form">
                         {{ csrf_field() }}
                         <label for="query" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label>
                         <br>
@@ -277,8 +277,10 @@
                 event.preventDefault();
                 const input = document.querySelector("#autocomplete-input");
                 const span = this.querySelector(".bold-span").innerHTML;
+                const form = document.querySelector("#search-form");
                 input.value = span;
                 suggestions.innerHTML = null;
+                form.submit();
             }
 
             const input = document.querySelector("#autocomplete-input");

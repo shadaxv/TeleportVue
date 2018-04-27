@@ -71,6 +71,9 @@ class TeleportController extends Controller
         if ($query) {
             try {
                 Teleport::create(['status' => 'pending', 'city_search' => $query]);
+                $query = preg_replace('/\s+/', ' ', $query);
+                $query = ltrim($query);
+                $query = str_replace(' ', '%20', $query);
                 $id = DB::getPdo()->lastInsertId();
                 $url = "https://api.teleport.org/api/cities/?search=" . $query; 
                 $curl = curl_init();

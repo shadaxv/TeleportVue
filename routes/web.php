@@ -18,3 +18,4 @@ Route::get('/', function () {
 Route::get('teleport', 'TeleportController@index')->name('teleport-index');
 Route::post('result', 'TeleportController@result')->name('result-index');
 Route::get('result', 'TeleportController@result')->name('result-index');
+Route::post('teleport', 'TeleportController@autocomplete')->name('teleport-index');

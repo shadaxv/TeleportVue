@@ -21,6 +21,50 @@ class TeleportController extends Controller
         return view('teleport');
     }
 
+    public function autocomplete(Request $request) {
+        if(request()->ajax()){
+            $query = $request->input;
+        }
+        
+        if ($query) {
+            $url = "https://api.teleport.org/api/cities/?search=" . $query; 
+            $curl = curl_init();
+            
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_TIMEOUT => 5,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => array(
+                    // Set Here Your Requesred Headers
+                    'Content-Type: application/json',
+                ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            if ($err || $response == false) {
+                echo "cURL Error #:" . $err;
+            } else {
+                $result = json_decode($response, true);  
+                $date = date('Y-m-d H:i:s');
+                if(empty($result["_embedded"]["city:search-results"]))
+                {
+                } else {
+                    $geohash = array();
+                    $georesult = array();
+                    foreach($result["_embedded"]["city:search-results"] as $key) {
+                        array_push($geohash, $key["matching_full_name"]);
+                    }
+                    return $geohash;
+                }
+            }
+        }
+    }
+
     public function result(Request $request)
     {
         $query = $request->input('query');

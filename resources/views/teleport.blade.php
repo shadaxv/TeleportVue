@@ -22,6 +22,7 @@
         <meta name="theme-color" content="#222">
         <meta name="msapplication-navbutton-color" content="#222">
         <meta name="apple-mobile-web-app-status-bar-style" content="#222">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
         <!-- Styles -->
         <style>
@@ -109,20 +110,23 @@
                 font-weight: 600 !IMPORTANT;
                 font-size: 16px !IMPORTANT;
             }
-            .table::-webkit-scrollbar-track {
+            .table::-webkit-scrollbar-track, .suggestions::-webkit-scrollbar-track {
                 -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
                 background-color: #F5F5F5;
                 border-radius: 10px; }
                 
-            .table::-webkit-scrollbar {
+            .table::-webkit-scrollbar, .suggestions::-webkit-scrollbar  {
                 width: 12px;
                 height: 12px;
                 background-color: #F5F5F5; }
             
-            .table::-webkit-scrollbar-thumb {
+            .table::-webkit-scrollbar-thumb, .suggestions::-webkit-scrollbar-thumb  {
                 border-radius: 10px;
                 -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
                 background-color: #E0E0E0; }
+            .suggestions::-webkit-scrollbar-thumb, .suggestions::-webkit-scrollbar-track {
+                border-radius: 0;
+            }
             .table {
                 overflow-x: auto;
                 width: fit-content;
@@ -143,6 +147,51 @@
             input {
                 padding: 1px 3px;
             }
+            .autocomplete-div {
+                width: 282px;
+                background: white;
+                margin: 0 auto;
+                position: relative;
+                padding-top: 10px;
+            }
+            .suggestions {
+                position: absolute;
+                background: #F5F5F5;
+                top: 0;
+                left: 0;
+                right: 0;
+                padding: 0;
+                list-style-type: none;
+                border-radius: 0 0 4px 4px;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            .suggestions li {
+                margin-bottom: 6px;
+                padding: 0 6px;
+            }
+            .suggestions li:first-child {
+                margin-top: 6px;
+            }
+            .suggestions li:last-child a {
+                border-radius: 0 0 2px 2px;
+                margin-bottom: 6px;
+            }
+            .suggestions li a {
+                display: block;
+                font-weight: 400;
+                border: 0;
+                padding: 0.25rem 0;
+            }
+            .suggestions li a .bold-span {
+                font-weight: 600;
+            }
+            .suggestions li a:hover {
+                background: #E0E0E0;
+                cursor: pointer;
+                border: 0;
+            }
+
         </style>
     </head>
     <body>
@@ -154,12 +203,15 @@
                 </div>
 
                 <section class="" style="margin: 30px auto">
-                    <form method="POST" action="/result">
+                    <form method="POST" action="/result" autocomplete="off">
                         {{ csrf_field() }}
                         <label for="query" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label>
                         <br>
-                        <input type="text" name="query" placeholder="Wroclaw" maxlength="25" required>
+                        <input type="text" name="query" placeholder="Wroclaw" maxlength="25" id="autocomplete-input" required>
                         <button type="submit">Wyszukaj!</button>
+                        <div class="autocomplete-div">
+                                <ul class="suggestions"></ul>
+                            </div>
                         @if(Session::has('error'))
                             <span style="color: #FF1744; font-weight: 600; margin-top: 6px; display: block"> {!! Session::get('error') !!} </span>
                         @endif
@@ -174,5 +226,63 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            let lastInput;
+
+            function findMatches() {
+                const inputValue = this.value;
+                if(inputValue == lastInput) {
+                    lastInput = inputValue;
+                } else if (inputValue.length >= 3) {
+                    lastInput = inputValue;
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        cache: false,
+                        encoding: "UTF-8",
+                        url: "{{ url('teleport') }}",
+                        data: {input: inputValue},
+                        success: function (data) {
+                            const html = data.map(place => {
+                                const city = place.substr(0, place.indexOf(',')); 
+                                const rest = place.substr(place.indexOf(','), place.length);
+                                return `
+                                    <li>
+                                        <span class="name"><a href="#autocomplete-input" class="autocomplete"><span class="bold-span">${city}</span>${rest}</a></span>
+                                    </li>
+                                    `;
+                            }).join('');
+                            suggestions.innerHTML = html;
+                            const autocomplete = document.querySelectorAll(".autocomplete");
+                            autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
+                        }
+                    });
+                } else {
+                    suggestions.innerHTML = null;
+                }
+            }
+
+            function autocompleteInput(event) {
+                event.preventDefault();
+                const input = document.querySelector("#autocomplete-input");
+                const span = this.querySelector(".bold-span").innerHTML;
+                input.value = span;
+            }
+
+            const input = document.querySelector("#autocomplete-input");
+            const suggestions = document.querySelector(".suggestions");
+
+            input.addEventListener("change", findMatches);
+            input.addEventListener("keyup", findMatches);
+
+        </script>
     </body>
 </html>

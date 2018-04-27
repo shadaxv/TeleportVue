@@ -57,12 +57,11 @@ class TeleportController extends Controller
                 if(empty($result["_embedded"]["city:search-results"]))
                 {
                 } else {
-                    $geohash = array();
                     $georesult = array();
                     foreach($result["_embedded"]["city:search-results"] as $key) {
-                        array_push($geohash, $key["matching_full_name"]);
+                        array_push($georesult, $key["matching_full_name"]);
                     }
-                    return $geohash;
+                    return $georesult;
                 }
             }
         }

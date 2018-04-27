@@ -228,11 +228,16 @@
 
         <script>
             let lastInput;
+            let html;
 
             function findMatches() {
                 const inputValue = this.value;
                 if(inputValue == lastInput) {
-                    lastInput = inputValue;
+                    if(!html == '') {
+                        suggestions.innerHTML = html;
+                        const autocomplete = document.querySelectorAll(".autocomplete");
+                        autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
+                    }
                 } else if (inputValue.length >= 3) {
                     lastInput = inputValue;
                     $.ajaxSetup({
@@ -253,7 +258,7 @@
                             if(data == null || data.length == 0) {
                                 suggestions.innerHTML = null;
                             } else {
-                                const html = data.map(place => {
+                                html = data.map(place => {
                                     const city = place.substr(0, place.indexOf(',')); 
                                     const rest = place.substr(place.indexOf(','), place.length);
                                     return `
@@ -288,11 +293,13 @@
 
             input.addEventListener("change", findMatches);
             input.addEventListener("keyup", findMatches);
+            input.addEventListener("focus", findMatches);
 
             document.addEventListener('click', function(event) {
                 const isClickInside = suggestions.contains(event.target);
-                
-                if (!isClickInside) {
+                const isInput = input.contains(event.target);
+
+                if (!isClickInside && !isInput) {
                     suggestions.innerHTML = null;
                 }
             });

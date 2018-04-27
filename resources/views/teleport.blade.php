@@ -191,10 +191,6 @@
                 cursor: pointer;
                 border: 0;
             }
-            .nodisplay {
-                display: none;
-            }
-
         </style>
     </head>
     <body>
@@ -254,19 +250,22 @@
                         url: "{{ url('teleport') }}",
                         data: {input: inputValue},
                         success: function (data) {
-                            const html = data.map(place => {
-                                const city = place.substr(0, place.indexOf(',')); 
-                                const rest = place.substr(place.indexOf(','), place.length);
-                                return `
-                                    <li>
-                                        <span class="name"><a href="#autocomplete-input" class="autocomplete"><span class="bold-span">${city}</span>${rest}</a></span>
-                                    </li>
-                                    `;
-                            }).join('');
-                            suggestions.innerHTML = html;
-                            const autocomplete = document.querySelectorAll(".autocomplete");
-                            autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
-                            suggestions.classList.remove("nodisplay");
+                            if(data == null || data.length == 0) {
+                                suggestions.innerHTML = null;
+                            } else {
+                                const html = data.map(place => {
+                                    const city = place.substr(0, place.indexOf(',')); 
+                                    const rest = place.substr(place.indexOf(','), place.length);
+                                    return `
+                                        <li>
+                                            <span class="name"><a href="#autocomplete-input" class="autocomplete"><span class="bold-span">${city}</span>${rest}</a></span>
+                                        </li>
+                                        `;
+                                }).join('');
+                                suggestions.innerHTML = html;
+                                const autocomplete = document.querySelectorAll(".autocomplete");
+                                autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
+                            }
                         }
                     });
                 } else {
@@ -279,7 +278,7 @@
                 const input = document.querySelector("#autocomplete-input");
                 const span = this.querySelector(".bold-span").innerHTML;
                 input.value = span;
-                suggestions.classList.add("nodisplay");
+                suggestions.innerHTML = null;
             }
 
             const input = document.querySelector("#autocomplete-input");
@@ -292,7 +291,7 @@
                 const isClickInside = suggestions.contains(event.target);
                 
                 if (!isClickInside) {
-                    suggestions.classList.add("nodisplay");
+                    suggestions.innerHTML = null;
                 }
             });
 

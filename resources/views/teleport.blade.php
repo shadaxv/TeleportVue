@@ -191,6 +191,9 @@
                 cursor: pointer;
                 border: 0;
             }
+            .nodisplay {
+                display: none;
+            }
 
         </style>
     </head>
@@ -263,6 +266,7 @@
                             suggestions.innerHTML = html;
                             const autocomplete = document.querySelectorAll(".autocomplete");
                             autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
+                            suggestions.classList.remove("nodisplay");
                         }
                     });
                 } else {
@@ -275,6 +279,7 @@
                 const input = document.querySelector("#autocomplete-input");
                 const span = this.querySelector(".bold-span").innerHTML;
                 input.value = span;
+                suggestions.classList.add("nodisplay");
             }
 
             const input = document.querySelector("#autocomplete-input");
@@ -282,6 +287,14 @@
 
             input.addEventListener("change", findMatches);
             input.addEventListener("keyup", findMatches);
+
+            document.addEventListener('click', function(event) {
+                const isClickInside = suggestions.contains(event.target);
+                
+                if (!isClickInside) {
+                    suggestions.classList.add("nodisplay");
+                }
+            });
 
         </script>
     </body>

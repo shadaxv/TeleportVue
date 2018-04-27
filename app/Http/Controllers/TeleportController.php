@@ -24,6 +24,9 @@ class TeleportController extends Controller
     public function autocomplete(Request $request) {
         if(request()->ajax()){
             $query = $request->input;
+            $query = preg_replace('/\s+/', ' ', $query);
+            $query = ltrim($query);
+            $query = str_replace(' ', '%20', $query);
         }
         
         if ($query) {

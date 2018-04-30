@@ -234,18 +234,26 @@
                 target.parentNode.replaceChild(cNode ,target);
             }
 
+            function watchAutoComplete() {
+                const autocomplete = document.querySelectorAll(".autocomplete");
+                autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
+            }
+
+            function appendDiv(html) {
+                let ul = document.createElement('ul');
+                ul.className = 'suggestions';
+                ul.innerHTML = html;
+                document.getElementById('autocomplete-div').appendChild(ul);
+            }
+
             function findMatches() {
                 const targetDiv = document.querySelector('.autocomplete-div');
                 const inputValue = this.value;
-                let ul = document.createElement('ul');
-                ul.className = 'suggestions';
                 if(inputValue == lastInput) {
                     if(!html == '') {
                         cleanDiv(targetDiv);
-                        ul.innerHTML = html;
-                        document.getElementById('autocomplete-div').appendChild(ul);
-                        const autocomplete = document.querySelectorAll(".autocomplete");
-                        autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
+                        appendDiv(html);
+                        watchAutoComplete();
                     }
                 } else if (inputValue.length >= 3) {
                     lastInput = inputValue;
@@ -277,10 +285,8 @@
                                         </li>
                                         `;
                                 }).join('');
-                                ul.innerHTML = html;
-                                document.getElementById('autocomplete-div').appendChild(ul);
-                                const autocomplete = document.querySelectorAll(".autocomplete");
-                                autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
+                                appendDiv(html);
+                                watchAutoComplete();
                             }
                         }
                     });

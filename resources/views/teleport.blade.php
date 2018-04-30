@@ -208,9 +208,8 @@
                         <br>
                         <input type="text" name="query" placeholder="Wroclaw" maxlength="25" id="autocomplete-input" required>
                         <button type="submit">Wyszukaj!</button>
-                        <div class="autocomplete-div">
-                                <ul class="suggestions"></ul>
-                            </div>
+                        <div class="autocomplete-div" id="autocomplete-div">
+                        </div>
                         @if(Session::has('error'))
                             <span style="color: #FF1744; font-weight: 600; margin-top: 6px; display: block"> {!! Session::get('error') !!} </span>
                         @endif
@@ -230,11 +229,21 @@
             let lastInput;
             let html;
 
+            function cleanDiv(target) {
+                var cNode = target.cloneNode(false);
+                target.parentNode.replaceChild(cNode ,target);
+            }
+
             function findMatches() {
+                const targetDiv = document.querySelector('.autocomplete-div');
                 const inputValue = this.value;
+                let ul = document.createElement('ul');
+                ul.className = 'suggestions';
                 if(inputValue == lastInput) {
                     if(!html == '') {
-                        suggestions.innerHTML = html;
+                        cleanDiv(targetDiv);
+                        ul.innerHTML = html;
+                        document.getElementById('autocomplete-div').appendChild(ul);
                         const autocomplete = document.querySelectorAll(".autocomplete");
                         autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
                     }
@@ -256,8 +265,9 @@
                         data: {input: inputValue},
                         success: function (data) {
                             if(data == null || data.length == 0) {
-                                suggestions.innerHTML = null;
+                                
                             } else {
+                                cleanDiv(targetDiv);
                                 html = data.map(place => {
                                     const city = place.substr(0, place.indexOf(',')); 
                                     const rest = place.substr(place.indexOf(','), place.length);
@@ -267,15 +277,18 @@
                                         </li>
                                         `;
                                 }).join('');
-                                suggestions.innerHTML = html;
+                                ul.innerHTML = html;
+                                document.getElementById('autocomplete-div').appendChild(ul);
                                 const autocomplete = document.querySelectorAll(".autocomplete");
                                 autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
                             }
                         }
                     });
+                    
                 } else {
-                    suggestions.innerHTML = null;
+                    cleanDiv(targetDiv);
                 }
+                suggestions = document.querySelector(".suggestions");
             }
 
             function autocompleteInput(event) {
@@ -284,23 +297,23 @@
                 const span = this.querySelector(".bold-span").innerHTML;
                 const form = document.querySelector("#search-form");
                 input.value = span;
-                suggestions.innerHTML = null;
+                const targetDiv = document.querySelector('.autocomplete-div');
+                cleanDiv(targetDiv);
                 form.submit();
             }
 
             const input = document.querySelector("#autocomplete-input");
-            const suggestions = document.querySelector(".suggestions");
+            const suggestionsContainer = document.querySelector("#autocomplete-div");
 
-            input.addEventListener("change", findMatches);
             input.addEventListener("keyup", findMatches);
             input.addEventListener("focus", findMatches);
 
             document.addEventListener('click', function(event) {
-                const isClickInside = suggestions.contains(event.target);
+                const targetDiv = document.querySelector('.autocomplete-div');
+                const isClickInside = suggestionsContainer.contains(event.target);
                 const isInput = input.contains(event.target);
-
                 if (!isClickInside && !isInput) {
-                    suggestions.innerHTML = null;
+                    cleanDiv(targetDiv);
                 }
             });
 

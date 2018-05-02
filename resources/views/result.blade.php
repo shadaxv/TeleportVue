@@ -23,6 +23,7 @@
         <meta name="theme-color" content="#222">
         <meta name="msapplication-navbutton-color" content="#222">
         <meta name="apple-mobile-web-app-status-bar-style" content="#222">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 
         <!-- Styles -->
         <style>
@@ -169,27 +170,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php 
-                        $i = 0;
-                        foreach($georesult as $key) {
-                            $i++;
-                            echo '<tr><td data-title="ID" class="tr-title">' . $i . '.</td><td data-title="Nazwa miasta">';
-                            echo $key["name"];
-                            echo '</td><td data-title="Państwo">';
-                            echo $key["_links"]["city:country"]["name"];
-                            echo '</td><td data-title="Populacja">';
-                            if (array_key_exists('population', $key)) {
-                                echo $key["population"];
-                            } else {
-                                echo "Nie podano";
-                            }
-                            echo '</td><td data-title="Szerokość geo.">';
-                            echo number_format((float)$key["location"]["latlon"]["latitude"], 4, '.', '');
-                            echo '</td><td data-title="Długość geo.">';
-                            echo number_format((float)$key["location"]["latlon"]["longitude"], 4, '.', '');
-                            echo "</td></tr>";
-                        } ?>
-                        
+
+                        <tr v-for="(key, index) in georesult">
+                            <td data-title="ID" class="tr-title" v-text="index + 1 + '.'"></td>
+                            <td data-title="Nazwa miasta" v-text='key["name"]'></td>
+                            <td data-title="Państwo" v-text='key["_links"]["city:country"]["name"]'></td>
+                            <td data-title="Populacja" v-text='key["population"] != undefined ? key["population"] : "Nie podano"'></td>
+                            <td data-title="Szerokość geo." v-text='key["location"]["latlon"]["latitude"].toFixed(4)'></td>
+                            <td data-title="Długość geo." v-text='key["location"]["latlon"]["longitude"].toFixed(4)'></td>
+                        </tr>
+
                     </tbody>
                 </table>
 
@@ -199,6 +189,20 @@
                 </div>
             </div>
         </div>     
+        
+        <script>
+
+            var renderTable = new Vue ({
+
+                el: '#table',
+
+                data: {
+                    georesult: {!! json_encode($georesult) !!}
+                }
+
+            });
+
+        </script>
             
     </body>
 </html>

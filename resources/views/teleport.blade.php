@@ -195,6 +195,9 @@
             .hidden {
                 display: none;
             }
+            .loading {
+                background: red;
+            }
         </style>
     </head>
     <body>
@@ -209,7 +212,7 @@
                     <form method="POST" action="/result" autocomplete="off" id="search-form">
                         {{ csrf_field() }}
                         <label for="city-name" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label><br>
-                        <input v-model="cityQuery" @keyup="refreshList" @focus="refreshList" name="city-name" type="text" placeholder="Wroclaw" maxlength="25" required>
+                        <input id="queryInput" v-model="cityQuery" @keyup="refreshList" @focus="refreshList" name="city-name" type="text" placeholder="Wroclaw" maxlength="25" required>
                         <button type="submit">Wyszukaj!</button>
                         <div class="autocomplete-div" v-click-outside="closeSuggestions" :class="{ 'hidden': isHidden }"> 
                             <ul class="suggestions">
@@ -242,7 +245,7 @@
                     cities: [],
                     cityQuery: '',
                     lastQuery: '',
-                    isHidden: true
+                    isHidden: true,
                 },
 
                 methods: {
@@ -276,6 +279,8 @@
                         e.preventDefault();
                         this.cityQuery = city;
                         const form = document.querySelector("#search-form");
+                        const input = document.querySelector("#queryInput");
+                        input.value = city;
                         form.submit();
                     },
 

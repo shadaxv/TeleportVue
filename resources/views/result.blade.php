@@ -154,7 +154,7 @@
                     Wyniki wyszukiwania dla:
                 </div>
                 <div class="title m-b-md">
-                    &quot;{{ Request::get('query') }}&quot;
+                    &quot;{{ Request::get('city-name') }}&quot;
                 </div>
 
                 <table id="table" class="table" style=''>

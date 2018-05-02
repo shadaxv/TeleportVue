@@ -22,13 +22,7 @@ class TeleportController extends Controller
     }
 
     public function autocomplete(Request $request) {
-        if(request()->ajax()){
-            $query = $request->input;
-            $query = preg_replace('/\s+/', ' ', $query);
-            $query = ltrim($query);
-            $query = str_replace(' ', '%20', $query);
-        }
-        
+        $query = $request->city;
         if ($query) {
             $url = "https://api.teleport.org/api/cities/?search=" . $query; 
             $curl = curl_init();
@@ -69,7 +63,7 @@ class TeleportController extends Controller
 
     public function result(Request $request)
     {
-        $query = $request->input('query');
+        $query = $request->input('city-name');
         if ($query) {
             try {
                 Teleport::create(['status' => 'pending', 'city_search' => $query]);

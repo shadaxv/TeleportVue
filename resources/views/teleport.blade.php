@@ -23,6 +23,8 @@
         <meta name="msapplication-navbutton-color" content="#222">
         <meta name="apple-mobile-web-app-status-bar-style" content="#222">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
         <!-- Styles -->
         <style>
@@ -152,7 +154,6 @@
                 background: white;
                 margin: 0 auto;
                 position: relative;
-                padding-top: 10px;
             }
             .suggestions {
                 position: absolute;
@@ -191,6 +192,9 @@
                 cursor: pointer;
                 border: 0;
             }
+            .hidden {
+                display: none;
+            }
         </style>
     </head>
     <body>
@@ -201,15 +205,18 @@
                     Teleport Search App
                 </div>
 
-                <section class="" style="margin: 30px auto">
+                <section id="suggestions__section" style="margin: 30px auto">
                     <form method="POST" action="/result" autocomplete="off" id="search-form">
                         {{ csrf_field() }}
-                        <label for="query" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label>
-                        <br>
-                        <input type="text" name="query" placeholder="Wroclaw" maxlength="25" id="autocomplete-input" required>
+                        <label for="city-name" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label><br>
+                        <input v-model="cityQuery" @keyup="refreshList" @focus="refreshList" name="city-name" type="text" placeholder="Wroclaw" maxlength="25" required>
                         <button type="submit">Wyszukaj!</button>
-                        <div class="autocomplete-div" id="autocomplete-div">
+                        <div class="autocomplete-div" v-click-outside="closeSuggestions" :class="{ 'hidden': isHidden }"> 
+                            <ul class="suggestions">
+                                <li v-for="city in cities"><a href="#search-form" @click="changeInput($event, city.substr(0, city.indexOf(',')))"><span v-text="city.substr(0, city.indexOf(','))" class="bold-span"></span>@{{city.substr(city.indexOf(','), city.length)}}</a></li>
+                            </ul>
                         </div>
+
                         @if(Session::has('error'))
                             <span style="color: #FF1744; font-weight: 600; margin-top: 6px; display: block"> {!! Session::get('error') !!} </span>
                         @endif
@@ -226,103 +233,97 @@
         </div>
 
         <script>
-            let lastInput;
-            let html;
 
-            function cleanDiv(target) {
-                var cNode = target.cloneNode(false);
-                target.parentNode.replaceChild(cNode ,target);
-            }
+            var suggestionModule = new Vue ({
+                
+                el: '#suggestions__section',
 
-            function watchAutoComplete() {
-                const autocomplete = document.querySelectorAll(".autocomplete");
-                autocomplete.forEach(anchor => anchor.addEventListener('click', autocompleteInput));
-            }
+                data: {
+                    cities: [],
+                    cityQuery: '',
+                    lastQuery: '',
+                    isHidden: true
+                },
 
-            function appendDiv(html) {
-                let ul = document.createElement('ul');
-                ul.className = 'suggestions';
-                ul.innerHTML = html;
-                document.getElementById('autocomplete-div').appendChild(ul);
-            }
+                methods: {
+                    refreshList() {
+                        this.isHidden = false;
+                        if(this.cityQuery == this.lastQuery){
+                            this.isHidden = false;
+                        } else if(this.cityQuery.length >= 3) {
+                            axios.post('{{ url('teleport') }}', {
+                                city: this.cityQuery
+                            })
+                            .then(function (response) {
+                                if(response == null || response.length == 0) {
+                                    this.isHidden = true;
+                                } else {
+                                    this.isHidden = false;
+                                    suggestionModule.cities = response.data;
+                                }
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
+                            this.lastQuery = this.cityQuery;
+                        } else {
+                            this.isHidden = true;
+                        }
 
-            function findMatches() {
-                const targetDiv = document.querySelector('.autocomplete-div');
-                const inputValue = this.value;
-                if(inputValue == lastInput) {
-                    if(!html == '') {
-                        cleanDiv(targetDiv);
-                        appendDiv(html);
-                        watchAutoComplete();
+                    },
+
+                    changeInput(e, city) {
+                        e.preventDefault();
+                        this.cityQuery = city;
+                        const form = document.querySelector("#search-form");
+                        form.submit();
+                    },
+
+                    closeSuggestions(event) {
+                        if(event.target.name == "city-name") {
+                            this.isHidden = false;
+                        } else {
+                            this.isHidden = true;
+                        }
                     }
-                } else if (inputValue.length >= 3) {
-                    lastInput = inputValue;
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+
+                directives: {
+                  'click-outside': {
+                    bind: function(el, binding, vNode) {
+                      // Provided expression must evaluate to a function.
+                      if (typeof binding.value !== 'function') {
+                        const compName = vNode.context.name
+                        let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
+                        if (compName) { warn += `Found in component '${compName}'` }
+            
+                        console.warn(warn)
+                      }
+                      // Define Handler and cache it on the element
+                      const bubble = binding.modifiers.bubble
+                      const handler = (e) => {
+                        if (bubble || (!el.contains(e.target) && el !== e.target)) {
+                          binding.value(e)
                         }
-                    });
-                    $.ajax({
-                        type: "POST",
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        cache: false,
-                        encoding: "UTF-8",
-                        url: "{{ url('teleport') }}",
-                        data: {input: inputValue},
-                        success: function (data) {
-                            if(data == null || data.length == 0) {
-                                
-                            } else {
-                                cleanDiv(targetDiv);
-                                html = data.map(place => {
-                                    const city = place.substr(0, place.indexOf(',')); 
-                                    const rest = place.substr(place.indexOf(','), place.length);
-                                    return `
-                                        <li>
-                                            <span class="name"><a href="#autocomplete-input" class="autocomplete"><span class="bold-span">${city}</span>${rest}</a></span>
-                                        </li>
-                                        `;
-                                }).join('');
-                                appendDiv(html);
-                                watchAutoComplete();
-                            }
-                        }
-                    });
-                    
-                } else {
-                    cleanDiv(targetDiv);
+                      }
+                      el.__vueClickOutside__ = handler
+            
+                      // add Event Listeners
+                      document.addEventListener('click', handler)
+                    },
+            
+                    unbind: function(el, binding) {
+                      // Remove Event Listeners
+                      document.removeEventListener('click', el.__vueClickOutside__)
+                      el.__vueClickOutside__ = null
+            
+                    }
+                  }
                 }
-                suggestions = document.querySelector(".suggestions");
-            }
 
-            function autocompleteInput(event) {
-                event.preventDefault();
-                const input = document.querySelector("#autocomplete-input");
-                const span = this.querySelector(".bold-span").innerHTML;
-                const form = document.querySelector("#search-form");
-                input.value = span;
-                const targetDiv = document.querySelector('.autocomplete-div');
-                cleanDiv(targetDiv);
-                form.submit();
-            }
-
-            const input = document.querySelector("#autocomplete-input");
-            const suggestionsContainer = document.querySelector("#autocomplete-div");
-
-            input.addEventListener("keyup", findMatches);
-            input.addEventListener("focus", findMatches);
-
-            document.addEventListener('click', function(event) {
-                const targetDiv = document.querySelector('.autocomplete-div');
-                const isClickInside = suggestionsContainer.contains(event.target);
-                const isInput = input.contains(event.target);
-                if (!isClickInside && !isInput) {
-                    cleanDiv(targetDiv);
-                }
             });
 
         </script>
+
     </body>
 </html>

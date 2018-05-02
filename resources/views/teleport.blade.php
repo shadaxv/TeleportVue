@@ -213,7 +213,7 @@
                         {{ csrf_field() }}
                         <label for="city-name" style="color: black; font-weight: 400; font-size: 1.25rem; display: inline-block; margin-bottom: 6px;">Wpisz poszukiwane miasto:</label><br>
                         <input id="queryInput" v-model="cityQuery" @keyup="refreshList" @focus="refreshList" name="city-name" type="text" placeholder="Wroclaw" maxlength="25" required>
-                        <button type="submit">Wyszukaj!</button>
+                        <button type="submit" id="search-button">Wyszukaj!</button>
                         <div class="autocomplete-div" v-click-outside="closeSuggestions" :class="{ 'hidden': isHidden }"> 
                             <ul class="suggestions">
                                 <li v-for="city in cities"><a href="#search-form" @click="changeInput($event, city.substr(0, city.indexOf(',')))"><span v-text="city.substr(0, city.indexOf(','))" class="bold-span"></span>@{{city.substr(city.indexOf(','), city.length)}}</a></li>
@@ -251,9 +251,10 @@
                 methods: {
                     refreshList() {
                         this.isHidden = false;
-                        if(this.cityQuery == this.lastQuery){
+                        const button = document.querySelector("#search-button");
+                        if(this.cityQuery == this.lastQuery && button.disabled == false){
                             this.isHidden = false;
-                        } else if(this.cityQuery.length >= 3) {
+                        } else if(this.cityQuery.length >= 3 && button.disabled == false) {
                             axios.post('{{ url('teleport') }}', {
                                 city: this.cityQuery
                             })
@@ -277,15 +278,19 @@
 
                     changeInput(e, city) {
                         e.preventDefault();
+                        this.isHidden = true;
                         this.cityQuery = city;
                         const form = document.querySelector("#search-form");
                         const input = document.querySelector("#queryInput");
+                        const button = document.querySelector("#search-button");
                         input.value = city;
+                        button.disabled = true;
                         form.submit();
                     },
 
                     closeSuggestions(event) {
-                        if(event.target.name == "city-name") {
+                        const button = document.querySelector("#search-button")
+                        if(event.target.name == "city-name" && button.disabled == false) {
                             this.isHidden = false;
                         } else {
                             this.isHidden = true;

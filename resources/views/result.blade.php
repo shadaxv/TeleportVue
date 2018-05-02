@@ -24,6 +24,7 @@
         <meta name="msapplication-navbutton-color" content="#222">
         <meta name="apple-mobile-web-app-status-bar-style" content="#222">
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
         <!-- Styles -->
         <style>
@@ -192,16 +193,35 @@
         
         <script>
 
+
             var renderTable = new Vue ({
 
                 el: '#table',
 
                 data: {
-                    georesult: {!! json_encode($georesult) !!}
+                    georesult: {!! json_encode($georesult) !!},
+                    googleKey: "AIzaSyCduvdllNAcURHc9As9AMAUqVlymObMPI0",
+                    googleCX: "013747875163028399998:erk-f02stja"
+                },
+
+                methods: {
+                    getFirstImage() {
+                        const url = `https://www.googleapis.com/customsearch/v1?key=${this.googleKey}&cx=${this.googleCX}&q=${this.georesult[0].name}&searchType=image&alt=json`
+                        axios.post(url)
+                        .then(function (response) {
+                            console.log(response.items[0]);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                    }
+                }, 
+                
+                beforeMount(){
+                    this.getFirstImage()
                 }
 
             });
-
         </script>
             
     </body>

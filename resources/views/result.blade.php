@@ -269,8 +269,8 @@
 
                 data: {
                     georesult: {!! json_encode($georesult) !!},
-                    googleKey: "AIzaSyCduvdllNAcURHc9As9AMAUqVlymObMPI0",
-                    googleCX: "013747875163028399998:erk-f02stja",
+                    googleKey: "{{env('GOOGLE_KEY')}}",
+                    googleCX: "{{env('GOOGLE_CX')}}",
                     imageUrl: '',
                     isHidden: true
                 },

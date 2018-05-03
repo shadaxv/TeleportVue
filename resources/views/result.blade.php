@@ -189,11 +189,11 @@
                 background: none;
                 border-radius: 3px;
                 border: 1px solid #BDBDBD;
+                transition: all 0.2s;
             }
 
             .popup-buttons button:hover, .popup-buttons button:focus {
                 color: #1976D2;
-                transition: all 0.3s;
                 border: 1px solid #1976D2;
             }
             .popup-buttons button:hover {

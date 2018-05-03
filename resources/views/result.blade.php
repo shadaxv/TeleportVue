@@ -68,7 +68,7 @@
                 font-size: 4rem;
             }
 
-            .links > a, .photo-link > a {
+            .links > a, .photo-link > a, .close-link > a {
                 color: #636b6f;
                 padding: 5px 18px 3px;
                 font-size: 14px;
@@ -167,6 +167,16 @@
                 max-height: 500px;
                 width: auto;
                 height: auto;
+                border-radius: 2.5px;
+            }
+            .popup-photo div {
+                padding: 8px;
+                border-radius: 5px;
+                background: white;
+            }
+            .close-link {
+                margin-bottom: 0;
+                padding-bottom: 0;
             }
         </style>
     </head>
@@ -212,8 +222,11 @@
                 </table>
 
                 <div :class="{ 'hidden': isHidden }" class="popup-photo">
-                    <div v-click-outside="closePhoto">
-                        <img v-bind:src="imageUrl" id="photo">
+                    <div>
+                        <img v-click-outside="closePhoto" v-bind:src="imageUrl" id="photo">
+                        <div class="close-link">
+                            <a href="#table">Zamknij obraz</a>
+                        </div>
                     </div>
                 </div>
 
@@ -244,6 +257,7 @@
                         const url = `https://www.googleapis.com/customsearch/v1?key=${this.googleKey}&cx=${this.googleCX}&q=${this.georesult[0].name}&searchType=image&alt=json`
                         axios.get(url)
                         .then(function (response) {
+                            console.log(response);
                             renderTable.imageUrl = response.data.items[0].link;
                         })
                         .catch(function (error) {

@@ -68,7 +68,7 @@
                 font-size: 4rem;
             }
 
-            .links > a {
+            .links > a, .photo-link > a {
                 color: #636b6f;
                 padding: 5px 18px 3px;
                 font-size: 14px;
@@ -142,15 +142,38 @@
             .links {
                 margin-bottom: 40px;
             }
+            .photo-link {
+                margin-bottom: 20px;
+            }
             input {
                 padding: 1px 3px;
+            }
+            div.hidden {
+                display: none !IMPORTANT;
+            }
+            .popup-photo {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: rgba(0,0,0,0.12);
+            }
+            .popup-photo div img {
+                max-width: 500px;
+                max-height: 500px;
+                width: auto;
+                height: auto;
             }
         </style>
     </head>
     <body>
         <div class="flex-center position-ref full-height">
 
-            <div class="content">
+            <div class="content" id="container">
 
                 <div class="subtitle m-b-md">
                     Wyniki wyszukiwania dla:
@@ -159,7 +182,11 @@
                     &quot;{{ Request::get('city-name') }}&quot;
                 </div>
 
-                <table id="table" class="table" style=''>
+                <div class="photo-link">
+                    <a href="#photo" @click="displayPhoto($event)">Zobacz jak wygląda {{ Request::get('city-name') }}</a>
+                </div>
+
+                <table id="table" class="table">
                     <thead style="border: 0;">
                         <tr>
                             <th style="position: sticky; top: 0px; background: #F5F5F5">ID</th>
@@ -184,6 +211,12 @@
                     </tbody>
                 </table>
 
+                <div :class="{ 'hidden': isHidden }" class="popup-photo">
+                    <div v-click-outside="closePhoto">
+                        <img v-bind:src="imageUrl" id="photo">
+                    </div>
+                </div>
+
                 <div class="links">
                     <a href="/teleport">Nowy wyszukiwanie</a>
                     <a href="https://github.com/shadaxv/teleport" target="_blank">GitHub</a>
@@ -196,26 +229,74 @@
 
             var renderTable = new Vue ({
 
-                el: '#table',
+                el: '#container',
 
                 data: {
                     georesult: {!! json_encode($georesult) !!},
                     googleKey: "AIzaSyCduvdllNAcURHc9As9AMAUqVlymObMPI0",
-                    googleCX: "013747875163028399998:erk-f02stja"
+                    googleCX: "013747875163028399998:erk-f02stja",
+                    imageUrl: '',
+                    isHidden: true
                 },
 
                 methods: {
                     getFirstImage() {
                         const url = `https://www.googleapis.com/customsearch/v1?key=${this.googleKey}&cx=${this.googleCX}&q=${this.georesult[0].name}&searchType=image&alt=json`
-                        axios.post(url)
+                        axios.get(url)
                         .then(function (response) {
-                            console.log(response.items[0]);
+                            renderTable.imageUrl = response.data.items[0].link;
                         })
                         .catch(function (error) {
                             console.log(error);
                         });
+                    },
+
+                    displayPhoto(e) {
+                        e.preventDefault();
+                        this.isHidden = false;
+                    },
+
+                    closePhoto(event) {
+                        if(event.target.id == "photo" || event.target.hash == "#photo") {
+                            this.isHidden = false;
+                        } else {
+                            this.isHidden = true;
+                        }
                     }
-                }, 
+                },
+
+                directives: {
+                  'click-outside': {
+                    bind: function(el, binding, vNode) {
+                      // Provided expression must evaluate to a function.
+                      if (typeof binding.value !== 'function') {
+                        const compName = vNode.context.name
+                        let warn = `[Vue-click-outside:] provided expression '${binding.expression}' is not a function, but has to be`
+                        if (compName) { warn += `Found in component '${compName}'` }
+            
+                        console.warn(warn)
+                      }
+                      // Define Handler and cache it on the element
+                      const bubble = binding.modifiers.bubble
+                      const handler = (e) => {
+                        if (bubble || (!el.contains(e.target) && el !== e.target)) {
+                          binding.value(e)
+                        }
+                      }
+                      el.__vueClickOutside__ = handler
+            
+                      // add Event Listeners
+                      document.addEventListener('click', handler)
+                    },
+            
+                    unbind: function(el, binding) {
+                      // Remove Event Listeners
+                      document.removeEventListener('click', el.__vueClickOutside__)
+                      el.__vueClickOutside__ = null
+            
+                    }
+                  }
+                },
                 
                 beforeMount(){
                     this.getFirstImage()

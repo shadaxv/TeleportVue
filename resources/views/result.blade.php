@@ -162,21 +162,42 @@
                 align-items: center;
                 background: rgba(0,0,0,0.12);
             }
-            .popup-photo div img {
+            .popup-photo .popup-container img {
                 max-width: 500px;
                 max-height: 500px;
                 width: auto;
                 height: auto;
                 border-radius: 2.5px;
             }
-            .popup-photo div {
+            .popup-photo .popup-container {
                 padding: 8px;
                 border-radius: 5px;
                 background: white;
             }
-            .close-link {
-                margin-bottom: 0;
-                padding-bottom: 0;
+            .popup-buttons {
+                margin: 0 auto;
+                padding-top: 8px;
+            }
+            .popup-buttons button {
+                color: #636b6f;
+                padding: 5px 18px 3px;
+                font-size: 14px;
+                font-weight: 600;
+                letter-spacing: .1rem;
+                text-decoration: none;
+                text-transform: uppercase;
+                background: none;
+                border-radius: 3px;
+                border: 1px solid #BDBDBD;
+            }
+
+            .popup-buttons button:hover, .popup-buttons button:focus {
+                color: #1976D2;
+                transition: all 0.3s;
+                border: 1px solid #1976D2;
+            }
+            .popup-buttons button:hover {
+                cursor: pointer;
             }
         </style>
     </head>
@@ -222,10 +243,12 @@
                 </table>
 
                 <div :class="{ 'hidden': isHidden }" class="popup-photo">
-                    <div>
+                    <div class="popup-container">
                         <img v-click-outside="closePhoto" v-bind:src="imageUrl" id="photo">
-                        <div class="close-link">
-                            <a href="#table">Zamknij obraz</a>
+                        <div class="popup-buttons">
+                            <button>
+                                Zamknij obraz
+                            </button>
                         </div>
                     </div>
                 </div>
